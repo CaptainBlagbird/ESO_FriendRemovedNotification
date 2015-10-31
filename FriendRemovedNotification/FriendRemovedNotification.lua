@@ -35,7 +35,7 @@ local function OnFriendAddedOrRemoved(eventCode, DisplayName)
 		return
 	end
 	
-	d("Friend "..action..": \""..DisplayName.."\"")
+	d("Friend "..action..": \""..ZO_LinkHandler_CreatePlayerLink(DisplayName).."\"")
 end
 EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_REMOVED, OnFriendAddedOrRemoved)
 EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_ADDED, OnFriendAddedOrRemoved)
