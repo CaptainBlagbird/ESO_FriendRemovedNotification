@@ -43,7 +43,7 @@ EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_ADDED, OnFriendAddedOrRem
 -- Event handler function for EVENT_PLAYER_ACTIVATED
 local function OnPlayerActivated(eventCode)
 	-- Set up SavedVariables table
-	SavedVars = ZO_SavedVars:New(AddonName.."_SavedVariables", 1)
+	SavedVars = ZO_SavedVars:NewAccountWide(AddonName.."_SavedVariables", 1)
 	if SavedVars.friends == nil then InitSavedVarsFriends() end
 	
 	-- Compare friends list with list in SavedVars
