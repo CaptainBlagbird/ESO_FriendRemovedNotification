@@ -6,6 +6,10 @@ https://github.com/CaptainBlagbird
 
 --]]
 
+-- Libraries
+local LN = LibStub:GetLibrary("LibNotifications")
+LN_provider = LN:CreateProvider()
+
 -- Addon info
 local AddonName = "FriendRemovedNotification"
 -- Local variables
@@ -22,23 +26,46 @@ local function InitSavedVarsFriends()
 	d(AddonName.." initialized.")
 end
 
--- Event handler function for EVENT_FRIEND_ADDED or EVENT_FRIEND_REMOVED
-local function OnFriendAddedOrRemoved(eventCode, DisplayName)
-	local action = ""
-	if eventCode == EVENT_FRIEND_ADDED then
-		SavedVars.friends[DisplayName] = GetTimeStamp()
-		action = "added"
-	elseif eventCode == EVENT_FRIEND_REMOVED then
-		SavedVars.friends[DisplayName] = nil
-		action = "removed"
-	else
-		return
-	end
+-- Event handler function for EVENT_FRIEND_REMOVED
+local function OnFriendRemoved(eventCode, DisplayName)
+	-- Remove from SavedVars friends list
+	SavedVars.friends[DisplayName] = nil
 	
-	d("Friend "..action..": \""..ZO_LinkHandler_CreatePlayerLink(DisplayName).."\"")
+	-- Function to remove custom notification
+	local function removeNotification(provider, data)
+		t = provider.notifications
+		j = data.notificationId
+		-- Loop through table starting at index
+		for i=j, #t do
+			-- Replace current element with next element
+			t[i] = t[i+1]
+			-- Update index in data
+			if i<#t then
+				t[i].notificationId = i
+				t[i].message = tostring(i)
+			end
+		end
+		provider:UpdateNotifications()
+	end
+	-- Custom notification info
+	local msg = {
+			dataType        = LIBNOTIFICATIONS_ROWTYPEID,
+			notificationId  = #LN_provider.notifications + 1,
+			note            = "Notification by add-on \""..AddonName.."\"",
+			message         = "|cFFFFFF"..ZO_LinkHandler_CreatePlayerLink(DisplayName).."|r was removed from your friends list. Send whisper?",
+			heading         = "Friend removed",
+			texture         = "EsoUI/Art/Notifications/notificationIcon_friend.dds",
+			declineCallback = function(data) removeNotification(LN_provider, data) end,
+			acceptCallback  = function(data)
+					StartChatInput("", CHAT_CHANNEL_WHISPER, DisplayName)
+					removeNotification(LN_provider, data)
+				end,
+		}
+	-- Add custom notification
+	table.insert(LN_provider.notifications, msg)
+	LN_provider:UpdateNotifications()
 end
-EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_REMOVED, OnFriendAddedOrRemoved)
-EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_ADDED, OnFriendAddedOrRemoved)
+EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_REMOVED, OnFriendRemoved)
 
 -- Event handler function for EVENT_PLAYER_ACTIVATED
 local function OnPlayerActivated(eventCode)
@@ -50,7 +77,7 @@ local function OnPlayerActivated(eventCode)
 	for DisplayName, _ in pairs(SavedVars.friends) do
 		if not IsFriend(DisplayName) then
 			-- Call event handler function directly
-			OnFriendAddedOrRemoved(EVENT_FRIEND_REMOVED, DisplayName)
+			OnFriendRemoved(EVENT_FRIEND_REMOVED, DisplayName)
 		end
 	end
 	
