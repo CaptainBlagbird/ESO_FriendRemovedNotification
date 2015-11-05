@@ -1,6 +1,6 @@
 
 --Register LAM with LibStub
-local MAJOR, MINOR = "LibNotifications", 1
+local MAJOR, MINOR = "LibNotifications", 1.1
 local libNotes, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not libNotes then return end	--the same or newer version of this lib is already loaded into memory 
 
@@ -11,23 +11,31 @@ LIBNOTIFICATIONS_ROWTYPEID = 347 -- random unique number for rowTypeId
 	
 local function SetupRowControl(control, data)
     ZO_SortFilterList.SetupRow(NOTIFICATIONS.sortFilterList, control, data)
-    local notificationType = data.notificationType
-
-    control.notificationType = notificationType
-    control.index = data.index
-
-	local noteBtn 		= GetControl(control, "Note")
-	local acceptBtn 	= GetControl(control, "Accept")
-	local declineBtn 	= GetControl(control, "Decline")
 	
-	local hideNote 			= (type(data.note) ~= "string")
-	local hideAcceptBtn 	= (type(data.acceptCallback) ~= "function")
-	local hideDeclineBtn 	= (type(data.declineCallback) ~= "function")
+	-- I have no idea why ZOS was doing this. It seems unecessary as none of their data
+	-- contains a data.index. All it does is nil out the control.index which is already set
+	-- as control.index = visibleDataIndex, seems like a bug to me.
+    --control.index = data.index
 	
-	noteBtn:SetHidden(showNote)
+	local acceptText = GetString(SI_NOTIFICATIONS_REQUEST_ACCEPT)
+	local declineText = GetString(SI_NOTIFICATIONS_REQUEST_DECLINE)
+	
+	local noteBtn = GetControl(control, "Note")
+	local acceptBtn = GetControl(control, "Accept")
+	local declineBtn = GetControl(control, "Decline")
+
+	local hideNote 			= type(data.note) ~= "string" and true or false
+	local hideAcceptBtn 	= type(data.acceptCallback) ~= "function" and true or false
+	local hideDeclineBtn 	= type(data.declineCallback) ~= "function" and true or false
+	
+	noteBtn:SetHidden(hideNote)
 	acceptBtn:SetHidden(hideAcceptBtn)
 	declineBtn:SetHidden(hideDeclineBtn)
 	
+	-- nil if necessary to hide keybinds
+	control.acceptText = hideAcceptBtn == false and acceptText
+	control.declineText = hideDeclineBtn == false and declineText
+		
     GetControl(control, "Icon"):SetTexture(data.texture)
     GetControl(control, "Type"):SetText(data.heading)
 end
@@ -42,32 +50,31 @@ end
 --=============================================================--
 --=== LOCAL PROVIDER FUNCTIONS ===--
 --=============================================================--
-function libNotesProvider:BuildNotificationList()
-    ZO_ClearNumericallyIndexedTable(self.list)
-	
-	-- Use a copy so it wont delete/alter the addons original msg list/table.
-	self.list = ZO_ShallowTableCopy(self.notifications)
-end
-
-function libNotesProvider:UpdateNotifications()
-	self:BuildNotificationList()
-	self:pushUpdateCallback()
-end
-
-
 function libNotesProvider:New(notificationManager)
 	if not self.dataRowTypeId then
 		self.dataRowTypeId = ZO_ScrollList_AddDataType(NOTIFICATIONS.sortFilterList.list, LIBNOTIFICATIONS_ROWTYPEID, "ZO_NotificationsRequestRow", 50, function(control, data) SetupNotification(control, data) end)
 	end
+	
 	self.dataRowTypeId = LIBNOTIFICATIONS_ROWTYPEID
 
     local provider = ZO_NotificationProvider.New(self, notificationManager)
 	
 	table.insert(NOTIFICATIONS.providers, provider)
 	provider.notifications = {}
-	provider.self = self
 	
     return provider
+end
+
+function libNotesProvider:BuildNotificationList()
+    ZO_ClearNumericallyIndexedTable(self.list)
+	
+	-- Use a copy so it wont delete/alter the addons original msg list/table.
+	self.list = ZO_DeepTableCopy(self.notifications)
+end
+
+function libNotesProvider:UpdateNotifications()
+	self:BuildNotificationList()
+	self:pushUpdateCallback()
 end
 
 function libNotesProvider:Accept(data)
