@@ -49,9 +49,9 @@ local function OnFriendRemoved(eventCode, DisplayName)
 	local msg = {
 			dataType        = LIBNOTIFICATIONS_ROWTYPEID,
 			notificationId  = #LN_provider.notifications + 1,
-			note            = "Notification by add-on \""..AddonName.."\"",
-			message         = "|cFFFFFF"..ZO_LinkHandler_CreatePlayerLink(DisplayName).."|r was removed from your friends list. Send whisper?",
-			heading         = "Friend removed",
+			note            = GetString(SI_FRN_MSG_NOTE),
+			message         = zo_strformat(GetString(SI_FRN_MSG_MESSAGE), ZO_LinkHandler_CreatePlayerLink(DisplayName)).." "..GetString(SI_CHAT_PLAYER_CONTEXT_WHISPER).."?",
+			heading         = GetString(SI_FRN_MSG_HEADING),
 			texture         = "EsoUI/Art/Notifications/notificationIcon_friend.dds",
 			declineCallback = function(data) removeNotification(LN_provider, data) end,
 			acceptCallback  = function(data)

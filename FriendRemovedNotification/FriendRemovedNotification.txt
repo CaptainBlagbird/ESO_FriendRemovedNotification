@@ -7,8 +7,15 @@
 ## OptionalDependsOn LibStub LibNotifications
 
 
+; Libraries
 libs/LibStub.lua
 libs/LibNotification.lua
+
+; Language
+lang/Strings.lua
+lang/Strings-$(language).lua
+
+; Main
 FriendRemovedNotification.lua
 
 
