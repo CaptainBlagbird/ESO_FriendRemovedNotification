@@ -23,7 +23,6 @@ local function InitSavedVarsFriends()
 		local DisplayName = GetFriendInfo(i)
 		SavedVars.friends[DisplayName] = 0
 	end
-	d(AddonName.." initialized.")
 end
 
 -- Event handler function for EVENT_FRIEND_REMOVED
@@ -42,7 +41,6 @@ local function OnFriendRemoved(eventCode, DisplayName)
 			-- Update index in data
 			if i<#t then
 				t[i].notificationId = i
-				t[i].message = tostring(i)
 			end
 		end
 		provider:UpdateNotifications()
