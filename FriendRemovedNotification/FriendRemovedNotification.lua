@@ -45,19 +45,30 @@ local function OnFriendRemoved(eventCode, DisplayName)
 		end
 		provider:UpdateNotifications()
 	end
+	-- Callback functions
+	local function acceptCallback(data)
+		StartChatInput("", CHAT_CHANNEL_WHISPER, DisplayName)
+		removeNotification(LN_provider, data)
+	end
+	local function declineCallback(data)
+		removeNotification(LN_provider, data)
+	end
 	-- Custom notification info
 	local msg = {
-			dataType        = LIBNOTIFICATIONS_ROWTYPEID,
-			notificationId  = #LN_provider.notifications + 1,
-			note            = GetString(SI_FRN_MSG_NOTE),
-			message         = zo_strformat(GetString(SI_FRN_MSG_MESSAGE), ZO_LinkHandler_CreatePlayerLink(DisplayName)).." "..GetString(SI_CHAT_PLAYER_CONTEXT_WHISPER).."?",
-			heading         = GetString(SI_FRN_MSG_HEADING),
-			texture         = "EsoUI/Art/Notifications/notificationIcon_friend.dds",
-			declineCallback = function(data) removeNotification(LN_provider, data) end,
-			acceptCallback  = function(data)
-					StartChatInput("", CHAT_CHANNEL_WHISPER, DisplayName)
-					removeNotification(LN_provider, data)
-				end,
+			dataType                = NOTIFICATIONS_REQUEST_DATA,
+			secsSinceRequest        = ZO_NormalizeSecondsSince(0),
+			note                    = GetString(SI_FRN_MSG_NOTE),
+			message                 = zo_strformat(GetString(SI_FRN_MSG_MESSAGE), ZO_LinkHandler_CreatePlayerLink(DisplayName)).." "..GetString(SI_CHAT_PLAYER_CONTEXT_WHISPER).."?",
+			heading                 = GetString(SI_FRN_MSG_HEADING),
+			texture                 = "EsoUI/Art/Notifications/notificationIcon_friend.dds",
+			shortDisplayText        = DisplayName,
+			controlsOwnSounds       = false,
+			keyboardAcceptCallback  = acceptCallback,
+			keybaordDeclineCallback = declineCallback,
+			gamepadAcceptCallback   = acceptCallback,
+			gamepadDeclineCallback  = declineCallback,
+			-- Custom keys
+			notificationId          = #LN_provider.notifications + 1,
 		}
 	-- Add custom notification
 	table.insert(LN_provider.notifications, msg)
