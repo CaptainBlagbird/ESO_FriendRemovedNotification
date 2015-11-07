@@ -58,7 +58,7 @@ local function OnFriendRemoved(eventCode, DisplayName)
 			dataType                = NOTIFICATIONS_REQUEST_DATA,
 			secsSinceRequest        = ZO_NormalizeSecondsSince(0),
 			note                    = GetString(SI_FRN_MSG_NOTE),
-			message                 = zo_strformat(GetString(SI_FRN_MSG_MESSAGE), ZO_LinkHandler_CreatePlayerLink(DisplayName)).." "..GetString(SI_CHAT_PLAYER_CONTEXT_WHISPER).."?",
+			message                 = zo_strformat(GetString(SI_FRN_MSG_MESSAGE), DisplayName).." "..GetString(SI_CHAT_PLAYER_CONTEXT_WHISPER).."?",
 			heading                 = GetString(SI_FRN_MSG_HEADING),
 			texture                 = "EsoUI/Art/Notifications/notificationIcon_friend.dds",
 			shortDisplayText        = DisplayName,
