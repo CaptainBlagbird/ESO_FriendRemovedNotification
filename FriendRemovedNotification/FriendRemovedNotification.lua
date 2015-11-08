@@ -26,10 +26,7 @@ local function InitSavedVarsFriends()
 end
 
 -- Event handler function for EVENT_FRIEND_REMOVED
-local function OnFriendRemoved(eventCode, DisplayName)
-	-- Remove from SavedVars friends list
-	SavedVars.friends[DisplayName] = nil
-	
+local function OnFriendRemoved(eventCode, DisplayName)	
 	-- Function to remove custom notification
 	local function removeNotification(provider, data)
 		t = provider.notifications
@@ -49,9 +46,15 @@ local function OnFriendRemoved(eventCode, DisplayName)
 	local function acceptCallback(data)
 		StartChatInput("", CHAT_CHANNEL_WHISPER, DisplayName)
 		removeNotification(LN_provider, data)
+		
+		-- Remove from SavedVars friends list
+		SavedVars.friends[DisplayName] = nil
 	end
 	local function declineCallback(data)
 		removeNotification(LN_provider, data)
+		
+		-- Remove from SavedVars friends list
+		SavedVars.friends[DisplayName] = nil
 	end
 	-- Custom notification info
 	local msg = {
