@@ -4,7 +4,7 @@
 ## APIVersion: 100013
 ## Description: Adds notification when a player was removed from the friends list
 ## SavedVariables: FriendRemovedNotification_SavedVariables
-## OptionalDependsOn LibStub LibNotifications
+## OptionalDependsOn: LibNotifications
 
 
 ; Libraries
