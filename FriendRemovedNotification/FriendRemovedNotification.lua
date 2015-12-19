@@ -18,15 +18,24 @@ local SavedVars = {}
 
 -- Function to set up the friends list in the SavedVars
 local function InitSavedVarsFriends()
-	SavedVars.friends = {}
+	if type(SavedVars.friends) ~= "table" then
+		SavedVars.friends = {}
+	end
 	for i=1, GetNumFriends() do
 		local DisplayName = GetFriendInfo(i)
-		SavedVars.friends[DisplayName] = 0
+		if not SavedVars.friends[DisplayName] then
+			SavedVars.friends[DisplayName] = 0
+		end
 	end
 end
 
+-- Event handler function for EVENT_FRIEND_ADDED
+local function OnFriendAdded(eventCode, DisplayName)
+	SavedVars.friends[DisplayName] = GetTimeStamp()
+end
+
 -- Event handler function for EVENT_FRIEND_REMOVED
-local function OnFriendRemoved(eventCode, DisplayName)	
+local function OnFriendRemoved(eventCode, DisplayName)
 	-- Function to remove custom notification
 	local function removeNotification(provider, data)
 		t = provider.notifications
@@ -77,13 +86,12 @@ local function OnFriendRemoved(eventCode, DisplayName)
 	table.insert(LN_provider.notifications, msg)
 	LN_provider:UpdateNotifications()
 end
-EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_REMOVED, OnFriendRemoved)
 
 -- Event handler function for EVENT_PLAYER_ACTIVATED
 local function OnPlayerActivated(eventCode)
 	-- Set up SavedVariables table
 	SavedVars = ZO_SavedVars:NewAccountWide(AddonName.."_SavedVariables", 1)
-	if SavedVars.friends == nil then InitSavedVarsFriends() end
+	InitSavedVarsFriends()
 	
 	-- Compare friends list with list in SavedVars
 	for DisplayName, _ in pairs(SavedVars.friends) do
@@ -92,6 +100,10 @@ local function OnPlayerActivated(eventCode)
 			OnFriendRemoved(EVENT_FRIEND_REMOVED, DisplayName)
 		end
 	end
+	
+	-- Register events that use saved variables
+	EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_ADDED, OnFriendAdded)
+	EVENT_MANAGER:RegisterForEvent(AddonName, EVENT_FRIEND_REMOVED, OnFriendRemoved)
 	
 	EVENT_MANAGER:UnregisterForEvent(AddonName, EVENT_PLAYER_ACTIVATED)
 end
