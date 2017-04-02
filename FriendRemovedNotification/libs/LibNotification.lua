@@ -1,5 +1,5 @@
 --Register LAM with LibStub
-local MAJOR, MINOR = "LibNotifications", 2
+local MAJOR, MINOR = "LibNotifications", 3
 local libNotification, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not libNotification then return end --the same or newer version of this lib is already loaded into memory
 
@@ -39,6 +39,7 @@ local GAMEPAD_NOTIFICATION_ICONS = { -- copied from notifications_gamepad.lua
     [NOTIFICATION_TYPE_POINTS_RESET] = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_character.dds",
     [NOTIFICATION_TYPE_CRAFT_BAG_AUTO_TRANSFER] = "EsoUI/Art/Notifications/Gamepad/gp_notificationIcon_autoTransfer.dds",
     [NOTIFICATION_TYPE_GROUP_ELECTION] = "EsoUI/Art/Notifications/Gamepad/gp_notificationIcon_autoTransfer.dds",
+    [NOTIFICATION_TYPE_DUEL] = "EsoUI/Art/Notifications/Gamepad/gp_notificationIcon_duel.dds",
 }
 
 local DATA_TYPE_TO_TEMPLATE = { -- also copied from notifications_gamepad.lua
@@ -49,6 +50,7 @@ local DATA_TYPE_TO_TEMPLATE = { -- also copied from notifications_gamepad.lua
     [NOTIFICATIONS_ALERT_DATA] = "ZO_GamepadNotificationsAlertRow",
     [NOTIFICATIONS_COLLECTIBLE_DATA] = "ZO_GamepadNotificationsCollectibleRow",
     [NOTIFICATIONS_LFG_JUMP_DUNGEON_DATA] = "ZO_GamepadNotificationsLFGJumpDungeonRow",
+    [NOTIFICATIONS_LFG_READY_CHECK_DATA] = "ZO_GamepadNotificationsLFGReadyCheckRow",
     [NOTIFICATIONS_LFG_FIND_REPLACEMENT_DATA] = "ZO_GamepadNotificationsLFGFindReplacementRow",
 }
 
