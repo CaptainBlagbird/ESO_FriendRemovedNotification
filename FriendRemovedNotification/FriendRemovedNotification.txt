@@ -1,7 +1,7 @@
 ## Title: Friend Removed Notification |c555555v1.0|r
 ## Version: 1.0
 ## Author: |c70C0DECaptainBlagbird|r
-## APIVersion: 100025
+## APIVersion: 100026
 ## Description: Adds notification when a player was removed from the friends list
 ## SavedVariables: FriendRemovedNotification_SavedVariables
 ## DependsOn: LibStub LibNotification
